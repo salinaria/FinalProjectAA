@@ -66,3 +66,14 @@ void mitosis(struct node* head,int x,int y,char *celname){
 	new_node->next=NULL;
 	curr->next=new_node;
 }
+void energy(struct node* head,char *celname,int energy){
+	struct node* curr=head;
+	while(strcmp(curr->info.name,celname)!=0)curr=curr->next;
+	curr->info.energy+=energy;
+	if(curr->info.energy>100)curr->info.energy=100;
+}
+
+
+
+
+
