@@ -14,7 +14,7 @@ void rand_name(char *name){
 		name[i]='a'+rand()%26;
 	}
 }
-int check_available(int x,int y,struct node *head){
+int check_cell(int x,int y,struct node *head){
 	struct node *curr=head;
 	while(curr->next!=NULL){
 		if(curr->info.x==x){
@@ -44,7 +44,7 @@ void create_node(struct node* head,int celnum,int map_size){
 	}
 	curr->next=NULL;
 }
-void mitosis(struct node* head,int x,int y,char *celname){
+void split_cell(struct node* head,int x,int y,char *celname){
 	struct node* curr=head;
 	struct node* new_node;
 	new_node=(struct node*)malloc((sizeof(struct node)));
@@ -62,9 +62,39 @@ void mitosis(struct node* head,int x,int y,char *celname){
 	new_node->next=NULL;
 	curr->next=new_node;
 }
-void energy(struct node* head,char *celname,int energy){
+void energy_cell(struct node* head,char *celname,int energy){
 	struct node* curr=head;
 	while(strcmp(curr->info.name,celname)!=0)curr=curr->next;
 	curr->info.energy+=energy;
 	if(curr->info.energy>100)curr->info.energy=100;
 }
+void move(struct node *head,char *celname,int direction){
+	struct node* curr=head;
+	while(strcmp(curr->info.name,celname)!=0)curr=curr->next;
+	//1 north
+	if(direction==1)curr->info.y++;
+	//2 south
+	else if(direction==2)curr->info.y--;
+	//3 northeast
+	else if(direction==3){
+		if((curr->info.x)%2==0)curr->info.y++;
+		curr->info.x++;
+	}
+	//4 northwest
+	else if(direction==4){
+		if((curr->info.x)%2==0)curr->info.y++;
+		curr->info.x--;
+	}
+	//5 southeast
+	else if(direction==5){
+		if((curr->info.x)%2==1)curr->info.y--;
+		curr->info.x++;
+	}
+	//6 southwest
+	else if(direction==6){
+		if((curr->info.x)%2==1)curr->info.y--;
+		curr->info.x--;
+	}
+}
+
+
