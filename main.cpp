@@ -18,8 +18,6 @@ main(){
     srand(time(NULL));
 	int i,j,k;
 	int **my_map;
-	create_map(7);
-
 	printf("[1]Load\n[2]New single player game\n[3]New Multiplayer game\n[4]Exit\n");
 	scanf("%d",&i);
 	if(i==1){
