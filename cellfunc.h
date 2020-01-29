@@ -11,41 +11,65 @@ struct node{
 };
 void rand_name(char *name){
 	int i;
-	for(i=0;i<5;i++){
+	for(i=0;i<4;i++){
 		name[i]='a'+rand()%26;
 	}
+	name[4]='\0';
 }
-int check_cell(int x,int y,int **map,struct node *head){
+int check_cell(int x,int y,int **map,int size_map,struct node *head){
 	struct node *curr=head;
-	while(curr->next!=NULL){
+	if(x<0 || y<0 || x>=size_map || y>=size_map){
+		return 0;
+	}
+	while(curr!=NULL){
 		if(curr->info.x==x){
-			if(curr->info.y==y)return 0;
+			if(curr->info.y==y){
+				return 0;	
+			}
 		}
 		curr=curr->next;
 	}
-	if(map[x][y]==3)return 0;
+	
+	if(map[x][y]==3){
+		return 0;
+	}
 	return 1;
 }
 struct node *create_node(struct node *head,int cellnum,int map_size,int **map){
 	int i,x,y,check=0;
-	head=(struct node*)malloc(cellnum*sizeof(struct node));
 	struct node *curr=head;
-	for(i=0;i<cellnum;i++){
-		curr->info.energy=0;
+    check=0;
+    x=rand()%map_size;
+    y=rand()%map_size;
+	while(map[x][y]==3){
+    	x=rand()%map_size;
+    	y=rand()%map_size;
+	}
+    curr->info.x=x;
+    curr->info.y=y;
+    curr->info.cellid=1;
+    curr->info.energy=0;
+    rand_name(curr->info.name);
+    curr->next=NULL;
+	for(i=1;i<cellnum;i++){
+		struct node *new_node=(struct node*)malloc(sizeof(struct node));
+		new_node->info.energy=0;
 		//random x and y for cell
 		while(check==0){
 			x=rand()%map_size;
 			y=rand()%map_size;
-			check=check_cell(x,y,map,head);
+			check=check_cell(x,y,map,map_size,head);
 		}
-		curr->info.x=x;
-		curr->info.y=y;
-		curr->info.cellid=i;
 		check=0;
-		rand_name(curr->info.name);
+		new_node->info.x=x;
+		new_node->info.y=y;
+		new_node->info.cellid=i+1;
+		new_node->info.energy=0;
+		rand_name(new_node->info.name);
+		new_node->next=NULL;
+		curr->next=new_node;
 		curr=curr->next;
 	}
-	curr->next=NULL;
 	return head;
 }
 void split_cell(struct node* head,int x,int y,char *cellname){
@@ -56,14 +80,14 @@ void split_cell(struct node* head,int x,int y,char *cellname){
 	//edit the cell mitosised
 	while(strcmp(curr->info.name,cellname)!=0){
 		curr=curr->next;
-		count++;	
+		count++;
 	}
 	rand_name(curr->info.name);
 	curr->info.energy=40;
 	//creat new cell
 	while(curr->next!=NULL){
 		curr=curr->next;
-		count++;	
+		count++;
 	}
 	new_node->next=NULL;
 	rand_name(new_node->info.name);
@@ -80,62 +104,62 @@ void energy_cell(struct node* head,char *cellname,int energy){
 	curr->info.energy+=energy;
 	if(curr->info.energy>100)curr->info.energy=100;
 }
-void move(struct node *head,char *cellname,int **map){
+void move(struct node *head,char *cellname,int **map,int size_map){
 	struct node* curr=head;
 	while(strcmp(curr->info.name,cellname)!=0)curr=curr->next;
 	printf("[1]North ");
-	if(check_cell(curr->info.x,curr->info.y+1,map,head)==0)printf("unavailable");
+	if(check_cell(curr->info.x,(curr->info.y)+1,map,size_map,head)==0)printf("               unavailable!");
 	printf("\n");
-	
+
 	printf("[2]South ");
-	if(check_cell(curr->info.x,curr->info.y-1,map,head)==0)printf("unavailable");
+	if(check_cell(curr->info.x,(curr->info.y)-1,map,size_map,head)==0)printf("               unavailable!");
 	printf("\n");
-	
+
 	printf("[3]Northeast ");
 	if(curr->info.x%2==0){
-		if(check_cell(curr->info.x+1,curr->info.y+1,map,head)==0)printf("unavailable");	
+		if(check_cell((curr->info.x)+1,(curr->info.y)+1,map,size_map,head)==0)printf("               unavailable!");
 	}
 	else{
-		if(check_cell(curr->info.x+1,curr->info.y,map,head)==0)printf("unavailable");
+		if(check_cell((curr->info.x)+1,curr->info.y,map,size_map,head)==0)printf("               unavailable!");
 	}
 	printf("\n");
-	
+
 	printf("[4]Northwest ");
 	if(curr->info.x%2==0){
-		if(check_cell(curr->info.x-1,curr->info.y+1,map,head)==0)printf("unavailable");	
+		if(check_cell((curr->info.x)-1,(curr->info.y)+1,map,size_map,head)==0)printf("               unavailable!");
 	}
 	else{
-		if(check_cell(curr->info.x-1,curr->info.y,map,head)==0)printf("unavailable");
+		if(check_cell((curr->info.x)-1,curr->info.y,map,size_map,head)==0)printf("               unavailable!");
 	}
 	printf("\n");
-	
+
 	printf("[5]Southeast ");
 	if(curr->info.x%2==0){
-		if(check_cell(curr->info.x+1,curr->info.y,map,head)==0)printf("unavailable");	
+		if(check_cell((curr->info.x)+1,curr->info.y,map,size_map,head)==0)printf("               unavailable!");
 	}
 	else{
-		if(check_cell(curr->info.x-1,curr->info.y-1,map,head)==0)printf("unavailable");
+		if(check_cell((curr->info.x)+1,(curr->info.y)-1,map,size_map,head)==0)printf("                unavailable!");
 	}
 	printf("\n");
-	
+
 	printf("[6]Southwest ");
 	if(curr->info.x%2==0){
-		if(check_cell(curr->info.x+1,curr->info.y,map,head)==0)printf("unavailable");	
+		if(check_cell((curr->info.x)-1,curr->info.y,map,size_map,head)==0)printf("                 unavailable!");
 	}
 	else{
-		if(check_cell(curr->info.x-1,curr->info.y-1,map,head)==0)printf("unavailable");
+		if(check_cell((curr->info.x)-1,(curr->info.y)-1,map,size_map,head)==0)printf("               unavailable!");
 	}
 	printf("\n");
-	
+
 	int direction;
 	scanf("%d",&direction);
 	//1 north
-	if(direction==1)curr->info.y++;
+	if(direction==1 && check_cell(curr->info.x,(curr->info.y)+1,map,size_map,head)==1)curr->info.y++;
 	//2 south
-	else if(direction==2)curr->info.y--;
+	else if(direction==2 && check_cell(curr->info.x,(curr->info.y)-1,map,size_map,head)==1)curr->info.y--;
 	//3 northeast
 	else if(direction==3){
-		if((curr->info.x)%2==0)curr->info.y++;
+		if((curr->info.x)%2==0 && check_cell((curr->info.x)+1,(curr->info.y)+1,map,size_map,head)==1)curr->info.y++;
 		curr->info.x++;
 	}
 	//4 northwest
@@ -153,25 +177,4 @@ void move(struct node *head,char *cellname,int **map){
 		if((curr->info.x)%2==1)curr->info.y--;
 		curr->info.x--;
 	}
-}
-void save_cell(struct node *head){
-	FILE *fp=fopen("savecell.txt","w");
-	struct node* curr=head;
-	while(curr->next!=NULL){
-		fprintf(fp,"%d %d %d %s",curr->info.x,curr->info.y,curr->info.energy,curr->info.name);
-		curr=curr->next;
-	}
-	fclose(fp);
-}
-void load_cell(struct node *head){
-	FILE *fp=fopen("savecell.txt","r");
-	struct node* curr=head;
-	int i=0;
-	while(curr->next!=NULL){
-		fscanf(fp,"%d %d %d %s",curr->info.x,curr->info.y,curr->info.energy,curr->info.name);
-		curr->info.cellid=i;
-		i++;
-		curr=curr->next;
-	}
-	fclose(fp);
 }
