@@ -14,7 +14,6 @@
 #include "maingame.h"
 using namespace std;
 main(){
-    initwindow(600,600);
     srand(time(NULL));
 	int i,j,k;
 	int **my_map;
@@ -31,6 +30,7 @@ main(){
 		if(numplayer==1){
 			struct node *head=(struct node*)malloc(sizeof(struct node));
 			head=load_cell_1(head);
+			initwindow(600,600);
 			single_player(my_map,size,head);
 		}
 		if(numplayer==2){
@@ -38,6 +38,7 @@ main(){
 			struct node *head_2=(struct node*)malloc(sizeof(struct node));
 			head_1=load_cell_1(head_1);
 			head_2=load_cell_2(head_2);
+			initwindow(600,600);
 			multi_player(my_map,size,head_1,head_2);
 		}
 	}
@@ -49,7 +50,7 @@ main(){
 		scanf("%d",&cellnum);
 		struct node *head=(struct node*)malloc(sizeof(struct node));
 		head=create_node(head,cellnum,size,my_map);
-		print_map_single(my_map,size,head);
+		initwindow(600,600);
 		single_player(my_map,size,head);
 	}
 	else if(i==3){
@@ -65,7 +66,7 @@ main(){
 		scanf("%d",&celnum_2);
 		struct node *head_2=(struct node*)malloc(sizeof(struct node));
 		head_2=create_node(head_2,celnum_2,size,my_map);
-		print_map_multi(my_map,size,head_1,head_2);
+		initwindow(600,600);
 		multi_player(my_map,size,head_1,head_2);
 	}
 	//else
